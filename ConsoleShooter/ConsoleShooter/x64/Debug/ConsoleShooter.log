@@ -1,0 +1,3 @@
+﻿  Main.cpp
+C:\Users\Admin\Desktop\C++\Практика\ConsoleShooter\ConsoleShooter\Main.cpp(329,12): warning C4244: аргумент: преобразование "time_t" в "unsigned int", возможна потеря данных
+  ConsoleShooter.vcxproj -> C:\Users\Admin\Desktop\C++\Практика\ConsoleShooter\x64\Debug\ConsoleShooter.exe
