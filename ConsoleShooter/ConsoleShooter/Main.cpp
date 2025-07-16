@@ -5,222 +5,222 @@
 #include <conio.h>
 #include <Windows.h>
 
-const int HEIGHT = 15, WIDTH = 15; // Размер карты
-int gameScore = 0; // Игровой счет
-int gameCounter = 10000; // Счетчик времени ()
+const int HEIGHT = 15, WIDTH = 15; // Р Р°Р·РјРµСЂ РєР°СЂС‚С‹
+int gameScore = 0; // РРіСЂРѕРІРѕР№ СЃС‡РµС‚
+int gameCounter = 10000; // РЎС‡РµС‚С‡РёРє РІСЂРµРјРµРЅРё ()
 int scoreTime = gameCounter;
 const char mapSymbol = '.';
 
-// Структура позиций
+// РЎС‚СЂСѓРєС‚СѓСЂР° РїРѕР·РёС†РёР№
 struct Position {
 	int x;
 	int y;
 	char symbol;
 };
 
-Position player{ WIDTH / 2, HEIGHT / 2, 'A' }; // Структура координат игрока
-Position enemy{ -1, -1, '@' }; // Cтрукитура координат противника
+Position player{ WIDTH / 2, HEIGHT / 2, 'A' }; // РЎС‚СЂСѓРєС‚СѓСЂР° РєРѕРѕСЂРґРёРЅР°С‚ РёРіСЂРѕРєР°
+Position enemy{ -1, -1, '@' }; // CС‚СЂСѓРєРёС‚СѓСЂР° РєРѕРѕСЂРґРёРЅР°С‚ РїСЂРѕС‚РёРІРЅРёРєР°
 
-enum playerDirection { UP, DOWN, LEFT, RIGHT }; // Направления игрока
+enum playerDirection { UP, DOWN, LEFT, RIGHT }; // РќР°РїСЂР°РІР»РµРЅРёСЏ РёРіСЂРѕРєР°
 
-char map[HEIGHT][WIDTH]; // Матрица игрового поля
+char map[HEIGHT][WIDTH]; // РњР°С‚СЂРёС†Р° РёРіСЂРѕРІРѕРіРѕ РїРѕР»СЏ
 
-// Cкрытие курсора
+// CРєСЂС‹С‚РёРµ РєСѓСЂСЃРѕСЂР°
 void hideConsoleCursor() {
-	// Проверка на неизвестную позицию курсора
+	// РџСЂРѕРІРµСЂРєР° РЅР° РЅРµРёР·РІРµСЃС‚РЅСѓСЋ РїРѕР·РёС†РёСЋ РєСѓСЂСЃРѕСЂР°
 	HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
 	if (hStdOut == INVALID_HANDLE_VALUE) return;
 
 	CONSOLE_CURSOR_INFO cursorInfo;
-	// Текущие параметры курсора
+	// РўРµРєСѓС‰РёРµ РїР°СЂР°РјРµС‚СЂС‹ РєСѓСЂСЃРѕСЂР°
 	if (GetConsoleCursorInfo(hStdOut, &cursorInfo)) {
-		cursorInfo.bVisible = FALSE;  // Скрытие курсора
+		cursorInfo.bVisible = FALSE;  // РЎРєСЂС‹С‚РёРµ РєСѓСЂСЃРѕСЂР°
 		SetConsoleCursorInfo(hStdOut, &cursorInfo);
 	}
 }
 
-// Создание символа на карте
+// РЎРѕР·РґР°РЅРёРµ СЃРёРјРІРѕР»Р° РЅР° РєР°СЂС‚Рµ
 void mapCreate(const int x, const int y, const char symbol) {
 	map[y][x] = symbol;
 }
 
-// Создание символа игрока на карте (сахар)
+// РЎРѕР·РґР°РЅРёРµ СЃРёРјРІРѕР»Р° РёРіСЂРѕРєР° РЅР° РєР°СЂС‚Рµ (СЃР°С…Р°СЂ)
 void playerCreate() {
 	mapCreate(player.x, player.y, player.symbol);
 }
 
-// Инициализация игры
+// РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РёРіСЂС‹
 void gameInitializate() {
-	for (int i = 0; i < HEIGHT; i++) { // Высота
-		for (int j = 0; j < WIDTH; j++) { // Ширина
+	for (int i = 0; i < HEIGHT; i++) { // Р’С‹СЃРѕС‚Р°
+		for (int j = 0; j < WIDTH; j++) { // РЁРёСЂРёРЅР°
 			map[i][j] = mapSymbol;
 		}
 	}
-	playerCreate(); // Инициализация игрока на начальных координатах
+	playerCreate(); // РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РёРіСЂРѕРєР° РЅР° РЅР°С‡Р°Р»СЊРЅС‹С… РєРѕРѕСЂРґРёРЅР°С‚Р°С…
 }
 
-// Отображение игры
+// РћС‚РѕР±СЂР°Р¶РµРЅРёРµ РёРіСЂС‹
 void gameDisplay() {
-	// Время и очки
+	// Р’СЂРµРјСЏ Рё РѕС‡РєРё
 	std::cout << "Score: " << gameScore << std::endl;
 	std::cout << "Time: " << gameCounter / 1000 << std::endl;
 
-	// Вывод игрового поля
-	for (int i = 0; i < HEIGHT; i++) { // Высота
-		for (int j = 0; j < WIDTH; j++) { // Ширина
+	// Р’С‹РІРѕРґ РёРіСЂРѕРІРѕРіРѕ РїРѕР»СЏ
+	for (int i = 0; i < HEIGHT; i++) { // Р’С‹СЃРѕС‚Р°
+		for (int j = 0; j < WIDTH; j++) { // РЁРёСЂРёРЅР°
 			std::cout << map[i][j] << ' ';
 		}
 		std::cout << std::endl;
 	}
 }
 
-// Генерация противников
+// Р“РµРЅРµСЂР°С†РёСЏ РїСЂРѕС‚РёРІРЅРёРєРѕРІ
 void enemyGenerate() {
 
-	// Cброс координат прошлого противника
+	// CР±СЂРѕСЃ РєРѕРѕСЂРґРёРЅР°С‚ РїСЂРѕС€Р»РѕРіРѕ РїСЂРѕС‚РёРІРЅРёРєР°
 	enemy.x = -1;
 	enemy.y = -1;
 
-	// Уменьшение общего таймера
-	static int count = 0; // Для уменьшения времени каждые 3 хода
+	// РЈРјРµРЅСЊС€РµРЅРёРµ РѕР±С‰РµРіРѕ С‚Р°Р№РјРµСЂР°
+	static int count = 0; // Р”Р»СЏ СѓРјРµРЅСЊС€РµРЅРёСЏ РІСЂРµРјРµРЅРё РєР°Р¶РґС‹Рµ 3 С…РѕРґР°
 	count++;
 	if (count == 2) {
 		if (scoreTime >= 3000) scoreTime -= 1000;
-		count = 0; // Сброс счетчика
+		count = 0; // РЎР±СЂРѕСЃ СЃС‡РµС‚С‡РёРєР°
 	}
 
-	gameCounter = scoreTime; // Cброс игрового таймера
+	gameCounter = scoreTime; // CР±СЂРѕСЃ РёРіСЂРѕРІРѕРіРѕ С‚Р°Р№РјРµСЂР°
 
-	// Генерация координат
+	// Р“РµРЅРµСЂР°С†РёСЏ РєРѕРѕСЂРґРёРЅР°С‚
 	bool exist = true;
 	while (exist) {
 		enemy.x = rand() % WIDTH;
 		enemy.y = rand() % HEIGHT;
 
-		// Проверка на игрока в точке генерации
+		// РџСЂРѕРІРµСЂРєР° РЅР° РёРіСЂРѕРєР° РІ С‚РѕС‡РєРµ РіРµРЅРµСЂР°С†РёРё
 		if (enemy.x == player.x && enemy.y == player.y) continue;
 
-		exist = false; // Выход из цикла
+		exist = false; // Р’С‹С…РѕРґ РёР· С†РёРєР»Р°
 	}
-	// Создание противника на карте
+	// РЎРѕР·РґР°РЅРёРµ РїСЂРѕС‚РёРІРЅРёРєР° РЅР° РєР°СЂС‚Рµ
 	mapCreate(enemy.x, enemy.y, enemy.symbol);
 }
 
-// Передвижение игрока
+// РџРµСЂРµРґРІРёР¶РµРЅРёРµ РёРіСЂРѕРєР°
 bool playerMove(playerDirection direction) {
 
-	system("cls"); // Очистка консоли
+	system("cls"); // РћС‡РёСЃС‚РєР° РєРѕРЅСЃРѕР»Рё
 
-	// Проверка направления
+	// РџСЂРѕРІРµСЂРєР° РЅР°РїСЂР°РІР»РµРЅРёСЏ
 	switch (direction) {
 	case UP:
-		// Выход за границы поля проверка
+		// Р’С‹С…РѕРґ Р·Р° РіСЂР°РЅРёС†С‹ РїРѕР»СЏ РїСЂРѕРІРµСЂРєР°
 		if (player.y > 0) {
 
-			// Проверка на противника
+			// РџСЂРѕРІРµСЂРєР° РЅР° РїСЂРѕС‚РёРІРЅРёРєР°
 			if (map[player.y - 1][player.x] == enemy.symbol) {
-				return false; // Смерть
+				return false; // РЎРјРµСЂС‚СЊ
 				break;
 			}
 
 			player.symbol = 'A';
-			mapCreate(player.x, player.y, mapSymbol); // Очистка текущей позиции игрока
+			mapCreate(player.x, player.y, mapSymbol); // РћС‡РёСЃС‚РєР° С‚РµРєСѓС‰РµР№ РїРѕР·РёС†РёРё РёРіСЂРѕРєР°
 			player.y--;
-			playerCreate(); // Создание игрока на новой позиции
+			playerCreate(); // РЎРѕР·РґР°РЅРёРµ РёРіСЂРѕРєР° РЅР° РЅРѕРІРѕР№ РїРѕР·РёС†РёРё
 			break;
 		}
 		else break;
 	case DOWN:
-		// Выход за границы поля проверка
+		// Р’С‹С…РѕРґ Р·Р° РіСЂР°РЅРёС†С‹ РїРѕР»СЏ РїСЂРѕРІРµСЂРєР°
 		if (player.y < HEIGHT - 1) {
 
-			// Проверка на противника
+			// РџСЂРѕРІРµСЂРєР° РЅР° РїСЂРѕС‚РёРІРЅРёРєР°
 			if (map[player.y + 1][player.x] == enemy.symbol) {
-				return false; // Смерть
+				return false; // РЎРјРµСЂС‚СЊ
 				break;
 			}
 
 			player.symbol = 'V';
-			mapCreate(player.x, player.y, mapSymbol); // Очистка текущей позиции игрока
+			mapCreate(player.x, player.y, mapSymbol); // РћС‡РёСЃС‚РєР° С‚РµРєСѓС‰РµР№ РїРѕР·РёС†РёРё РёРіСЂРѕРєР°
 			player.y++;
-			playerCreate(); // Создание игрока на новой позиции
+			playerCreate(); // РЎРѕР·РґР°РЅРёРµ РёРіСЂРѕРєР° РЅР° РЅРѕРІРѕР№ РїРѕР·РёС†РёРё
 			break;
 		}
 		else break;
 	case LEFT:
-		// Выход за границы поля проверка
+		// Р’С‹С…РѕРґ Р·Р° РіСЂР°РЅРёС†С‹ РїРѕР»СЏ РїСЂРѕРІРµСЂРєР°
 		if (player.x > 0) {
 
-			// Проверка на противника
+			// РџСЂРѕРІРµСЂРєР° РЅР° РїСЂРѕС‚РёРІРЅРёРєР°
 			if (map[player.y][player.x - 1] == enemy.symbol) {
-				return false; // Смерть
+				return false; // РЎРјРµСЂС‚СЊ
 				break;
 			}
 
 			player.symbol = '<';
-			mapCreate(player.x, player.y, mapSymbol); // Очистка текущей позиции игрока
+			mapCreate(player.x, player.y, mapSymbol); // РћС‡РёСЃС‚РєР° С‚РµРєСѓС‰РµР№ РїРѕР·РёС†РёРё РёРіСЂРѕРєР°
 			player.x--;
-			playerCreate(); // Создание игрока на новой позиции
+			playerCreate(); // РЎРѕР·РґР°РЅРёРµ РёРіСЂРѕРєР° РЅР° РЅРѕРІРѕР№ РїРѕР·РёС†РёРё
 			break;
 		}
 		else break;
 	case RIGHT:
-		// Выход за границы поля проверка
+		// Р’С‹С…РѕРґ Р·Р° РіСЂР°РЅРёС†С‹ РїРѕР»СЏ РїСЂРѕРІРµСЂРєР°
 		if (player.x < WIDTH - 1) {
 
-			// Проверка на противника
+			// РџСЂРѕРІРµСЂРєР° РЅР° РїСЂРѕС‚РёРІРЅРёРєР°
 			if (map[player.y][player.x + 1] == enemy.symbol) {
-				return false; // Смерть
+				return false; // РЎРјРµСЂС‚СЊ
 				break;
 			}
 
 			player.symbol = '>';
-			mapCreate(player.x, player.y, mapSymbol); // Очистка текущей позиции игрока
+			mapCreate(player.x, player.y, mapSymbol); // РћС‡РёСЃС‚РєР° С‚РµРєСѓС‰РµР№ РїРѕР·РёС†РёРё РёРіСЂРѕРєР°
 			player.x++;
-			playerCreate(); // Создание игрока на новой позиции
+			playerCreate(); // РЎРѕР·РґР°РЅРёРµ РёРіСЂРѕРєР° РЅР° РЅРѕРІРѕР№ РїРѕР·РёС†РёРё
 			break;
 		}
 		else break;
 	}
 
-	gameDisplay(); // Обновление игрового поля
+	gameDisplay(); // РћР±РЅРѕРІР»РµРЅРёРµ РёРіСЂРѕРІРѕРіРѕ РїРѕР»СЏ
 	return true;
 }
 
-// Стрельба игрока
+// РЎС‚СЂРµР»СЊР±Р° РёРіСЂРѕРєР°
 void playerShoot(playerDirection direction) {
 
-	system("cls"); // Очистка консоли
+	system("cls"); // РћС‡РёСЃС‚РєР° РєРѕРЅСЃРѕР»Рё
 
-	Position bullet; // Создание объекта пули
+	Position bullet; // РЎРѕР·РґР°РЅРёРµ РѕР±СЉРµРєС‚Р° РїСѓР»Рё
 
-	// Проверка на направление
+	// РџСЂРѕРІРµСЂРєР° РЅР° РЅР°РїСЂР°РІР»РµРЅРёРµ
 	switch (direction) {
 	case UP:
-		// Проверка на границу карты
+		// РџСЂРѕРІРµСЂРєР° РЅР° РіСЂР°РЅРёС†Сѓ РєР°СЂС‚С‹
 		if (player.y > 0) {
 			bullet.symbol = '|';
-			// Создание начальной позиции пули
+			// РЎРѕР·РґР°РЅРёРµ РЅР°С‡Р°Р»СЊРЅРѕР№ РїРѕР·РёС†РёРё РїСѓР»Рё
 			bullet.y = player.y - 1;
 			bullet.x = player.x;
 
-			// Движение пули по карте
+			// Р”РІРёР¶РµРЅРёРµ РїСѓР»Рё РїРѕ РєР°СЂС‚Рµ
 			while (bullet.y >= 0) {
 				mapCreate(bullet.x, bullet.y, bullet.symbol);
 				gameDisplay();
 				std::this_thread::sleep_for(std::chrono::milliseconds(100));
 				mapCreate(bullet.x, bullet.y, mapSymbol);
 
-				// Проверка на на противника
+				// РџСЂРѕРІРµСЂРєР° РЅР° РЅР° РїСЂРѕС‚РёРІРЅРёРєР°
 				if (bullet.x == enemy.x && bullet.y == enemy.y) {
 
-					gameScore++; // Увеличение счетчика очков
+					gameScore++; // РЈРІРµР»РёС‡РµРЅРёРµ СЃС‡РµС‚С‡РёРєР° РѕС‡РєРѕРІ
 					system("cls");
-					enemyGenerate(); // Генерация нового противника
+					enemyGenerate(); // Р“РµРЅРµСЂР°С†РёСЏ РЅРѕРІРѕРіРѕ РїСЂРѕС‚РёРІРЅРёРєР°
 					break;
 				}
 
-				bullet.y--; // Cмещение пули
+				bullet.y--; // CРјРµС‰РµРЅРёРµ РїСѓР»Рё
 				system("cls");
 			}
 
@@ -229,30 +229,30 @@ void playerShoot(playerDirection direction) {
 		else break;
 
 	case DOWN:
-		// Проверка на границу карты
+		// РџСЂРѕРІРµСЂРєР° РЅР° РіСЂР°РЅРёС†Сѓ РєР°СЂС‚С‹
 		if (player.y < HEIGHT) {
 			bullet.symbol = '|';
-			// Создание начальной позиции пули
+			// РЎРѕР·РґР°РЅРёРµ РЅР°С‡Р°Р»СЊРЅРѕР№ РїРѕР·РёС†РёРё РїСѓР»Рё
 			bullet.y = player.y + 1;
 			bullet.x = player.x;
 
-			// Движение пули по карте
+			// Р”РІРёР¶РµРЅРёРµ РїСѓР»Рё РїРѕ РєР°СЂС‚Рµ
 			while (bullet.y < HEIGHT) {
 				mapCreate(bullet.x, bullet.y, bullet.symbol);
 				gameDisplay();
 				std::this_thread::sleep_for(std::chrono::milliseconds(100));
 				mapCreate(bullet.x, bullet.y, mapSymbol);
 
-				// Проверка на на противника
+				// РџСЂРѕРІРµСЂРєР° РЅР° РЅР° РїСЂРѕС‚РёРІРЅРёРєР°
 				if (bullet.x == enemy.x && bullet.y == enemy.y) {
 
-					gameScore++; // Увеличение счетчика очков
+					gameScore++; // РЈРІРµР»РёС‡РµРЅРёРµ СЃС‡РµС‚С‡РёРєР° РѕС‡РєРѕРІ
 					system("cls");
-					enemyGenerate(); // Генерация нового противника
+					enemyGenerate(); // Р“РµРЅРµСЂР°С†РёСЏ РЅРѕРІРѕРіРѕ РїСЂРѕС‚РёРІРЅРёРєР°
 					break;
 				}
 
-				bullet.y++; // Cмещение пули
+				bullet.y++; // CРјРµС‰РµРЅРёРµ РїСѓР»Рё
 				system("cls");
 			}
 
@@ -260,30 +260,30 @@ void playerShoot(playerDirection direction) {
 		}
 		else break;
 	case LEFT:
-		// Проверка на границу карты
+		// РџСЂРѕРІРµСЂРєР° РЅР° РіСЂР°РЅРёС†Сѓ РєР°СЂС‚С‹
 		if (player.x > 0) {
 			bullet.symbol = '-';
-			// Создание начальной позиции пули
+			// РЎРѕР·РґР°РЅРёРµ РЅР°С‡Р°Р»СЊРЅРѕР№ РїРѕР·РёС†РёРё РїСѓР»Рё
 			bullet.y = player.y;
 			bullet.x = player.x - 1;
 
-			// Движение пули по карте
+			// Р”РІРёР¶РµРЅРёРµ РїСѓР»Рё РїРѕ РєР°СЂС‚Рµ
 			while (bullet.x >= 0) {
 				mapCreate(bullet.x, bullet.y, bullet.symbol);
 				gameDisplay();
 				std::this_thread::sleep_for(std::chrono::milliseconds(100));
 				mapCreate(bullet.x, bullet.y, mapSymbol);
 
-				// Проверка на на противника
+				// РџСЂРѕРІРµСЂРєР° РЅР° РЅР° РїСЂРѕС‚РёРІРЅРёРєР°
 				if (bullet.x == enemy.x && bullet.y == enemy.y) {
 
-					gameScore++; // Увеличение счетчика очков
+					gameScore++; // РЈРІРµР»РёС‡РµРЅРёРµ СЃС‡РµС‚С‡РёРєР° РѕС‡РєРѕРІ
 					system("cls");
-					enemyGenerate(); // Генерация нового противника
+					enemyGenerate(); // Р“РµРЅРµСЂР°С†РёСЏ РЅРѕРІРѕРіРѕ РїСЂРѕС‚РёРІРЅРёРєР°
 					break;
 				}
 
-				bullet.x--; // Cмещение пули
+				bullet.x--; // CРјРµС‰РµРЅРёРµ РїСѓР»Рё
 				system("cls");
 			}
 
@@ -291,30 +291,30 @@ void playerShoot(playerDirection direction) {
 		}
 		else break;
 	case RIGHT:
-		// Проверка на границу карты
+		// РџСЂРѕРІРµСЂРєР° РЅР° РіСЂР°РЅРёС†Сѓ РєР°СЂС‚С‹
 		if (player.x < WIDTH) {
 			bullet.symbol = '-';
-			// Создание начальной позиции пули
+			// РЎРѕР·РґР°РЅРёРµ РЅР°С‡Р°Р»СЊРЅРѕР№ РїРѕР·РёС†РёРё РїСѓР»Рё
 			bullet.y = player.y;
 			bullet.x = player.x + 1;
 
-			// Движение пули по карте
+			// Р”РІРёР¶РµРЅРёРµ РїСѓР»Рё РїРѕ РєР°СЂС‚Рµ
 			while (bullet.x < WIDTH) {
 				mapCreate(bullet.x, bullet.y, bullet.symbol);
 				gameDisplay();
 				std::this_thread::sleep_for(std::chrono::milliseconds(100));
 				mapCreate(bullet.x, bullet.y, mapSymbol);
 
-				// Проверка на на противника
+				// РџСЂРѕРІРµСЂРєР° РЅР° РЅР° РїСЂРѕС‚РёРІРЅРёРєР°
 				if (bullet.x == enemy.x && bullet.y == enemy.y) {
 
-					gameScore++; // Увеличение счетчика очков
+					gameScore++; // РЈРІРµР»РёС‡РµРЅРёРµ СЃС‡РµС‚С‡РёРєР° РѕС‡РєРѕРІ
 					system("cls");
-					enemyGenerate(); // Генерация нового противника
+					enemyGenerate(); // Р“РµРЅРµСЂР°С†РёСЏ РЅРѕРІРѕРіРѕ РїСЂРѕС‚РёРІРЅРёРєР°
 					break;
 				}
 
-				bullet.x++; // Смещение пули
+				bullet.x++; // РЎРјРµС‰РµРЅРёРµ РїСѓР»Рё
 				system("cls");
 			}
 
@@ -322,35 +322,35 @@ void playerShoot(playerDirection direction) {
 		}
 		else break;
 	}
-	gameDisplay(); // Отображение игрового поля
+	gameDisplay(); // РћС‚РѕР±СЂР°Р¶РµРЅРёРµ РёРіСЂРѕРІРѕРіРѕ РїРѕР»СЏ
 }
 
 int main() {
-	srand(time(NULL)); // Отключение привязки ко времени при генерации рандомных чисел
+	srand(time(NULL)); // РћС‚РєР»СЋС‡РµРЅРёРµ РїСЂРёРІСЏР·РєРё РєРѕ РІСЂРµРјРµРЅРё РїСЂРё РіРµРЅРµСЂР°С†РёРё СЂР°РЅРґРѕРјРЅС‹С… С‡РёСЃРµР»
 
 	hideConsoleCursor();
 
-	gameInitializate(); // Инициализация игры
+	gameInitializate(); // РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РёРіСЂС‹
 
-	playerDirection direction = UP; // Направление игрока
-	int gameSpeed = 100; // Cкорость игры в миллисекундах
+	playerDirection direction = UP; // РќР°РїСЂР°РІР»РµРЅРёРµ РёРіСЂРѕРєР°
+	int gameSpeed = 100; // CРєРѕСЂРѕСЃС‚СЊ РёРіСЂС‹ РІ РјРёР»Р»РёСЃРµРєСѓРЅРґР°С…
 	bool playing = true;
 	bool playerAlive = true;
 
-	enemyGenerate(); // Генерация первого противника
-	gameDisplay(); // Отображение игрового поля
+	enemyGenerate(); // Р“РµРЅРµСЂР°С†РёСЏ РїРµСЂРІРѕРіРѕ РїСЂРѕС‚РёРІРЅРёРєР°
+	gameDisplay(); // РћС‚РѕР±СЂР°Р¶РµРЅРёРµ РёРіСЂРѕРІРѕРіРѕ РїРѕР»СЏ
 
-	int iteration = 1; // Итерации игрового цикла (для подсчета секундного времени)
+	int iteration = 1; // РС‚РµСЂР°С†РёРё РёРіСЂРѕРІРѕРіРѕ С†РёРєР»Р° (РґР»СЏ РїРѕРґСЃС‡РµС‚Р° СЃРµРєСѓРЅРґРЅРѕРіРѕ РІСЂРµРјРµРЅРё)
 
 	while (playing && playerAlive) {
 
-		// Обновление счетчика раз в секунду
+		// РћР±РЅРѕРІР»РµРЅРёРµ СЃС‡РµС‚С‡РёРєР° СЂР°Р· РІ СЃРµРєСѓРЅРґСѓ
 		if (iteration >= 10) {
 			system("cls");
 			gameDisplay();
 		}
 
-		// Считывание зажатие клавиш
+		// РЎС‡РёС‚С‹РІР°РЅРёРµ Р·Р°Р¶Р°С‚РёРµ РєР»Р°РІРёС€
 		if (GetAsyncKeyState('W') & 0x8000) {
 			if (playerMove(UP)) direction = UP;
 			else {
@@ -381,11 +381,11 @@ int main() {
 		}
 		if (GetAsyncKeyState('E') & 0x8000)
 			playerShoot(direction);
-		// Выход из игры
+		// Р’С‹С…РѕРґ РёР· РёРіСЂС‹
 		if (GetAsyncKeyState(VK_ESCAPE) & 0x8000)
 			playing = false;
 
-		// Смерть по истечению таймера
+		// РЎРјРµСЂС‚СЊ РїРѕ РёСЃС‚РµС‡РµРЅРёСЋ С‚Р°Р№РјРµСЂР°
 		if (gameCounter <= 0) playerAlive = false;
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(gameSpeed));
@@ -395,9 +395,9 @@ int main() {
 	}
 
 
-	// Конечный вывод
+	// РљРѕРЅРµС‡РЅС‹Р№ РІС‹РІРѕРґ
 	if (!playerAlive) {
-		std::cout << "You are die" << std::endl;
+		std::cout << "You are dead" << std::endl;
 		if (gameCounter <= 0) {
 			std::cout << "The time is out" << std::endl;
 		}
